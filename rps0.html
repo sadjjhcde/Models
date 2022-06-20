@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>RGB0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+<script>
+    let canvas = document.getElementById('canvas');
+    let context = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // let pixel = context.createImageData(1,1);
+    // let pixelData  = pixel.data;
+
+    let cellSize = 5;
+    let cellWidth = Math.floor(canvas.width / cellSize) + 1;
+    let cellHeight = Math.floor(canvas.height / cellSize) + 1;
+
+    let colors = ['white', '#ffc30f', '#ff5733','#c70039','#900c3f','#581845'];
+    //
+    let cells = [];
+    for (let i = 0; i < cellWidth; i++) {
+        let cellsY = [];
+        for (let j = 0; j < cellHeight; j++) {
+            //let cell = Math.floor(Math.random() * 4);
+            let cell = 0;
+            cellsY.push(cell);
+        }
+        cells.push(cellsY);
+    }
+
+    for (let i = 0; i < 108; i++) {
+        for (let j = 1; j <= 5; j++) {
+            cells[Math.floor(Math.random() * cellWidth)][Math.floor(Math.random() * cellHeight)] = j;
+        }
+    }
+
+    // for (let i = 0; i <2; i++) {
+    //     cells[Math.floor(Math.random() * canvas.width)][Math.floor(Math.random() * canvas.height)] = i;
+    // }
+
+    function isMost(cell1, cell2) {
+        // if (Math.floor(Math.random() * 2) === 0) {
+        //     return false;
+        // }
+        if (cell2 === 0 ) {
+            return true;
+        } else if (cell1 === 1 && cell2 === 2) {
+            return true;
+        } else if (cell1 === 2 && cell2 === 3) {
+            return true;
+        } else if (cell1 === 3 && cell2 === 4) {
+            return true;
+        } else if (cell1 === 4 && cell2 === 5) {
+            return true;
+        } else if (cell1 === 5 && cell2 === 1) {
+            return true;
+        }
+        return false;
+    }
+
+    function tick() {
+
+    //update
+        let newCells = [];
+        for (let i = 0; i < cellWidth; i++) {
+            let newCellsY = [];
+            for (let j = 0; j < cellHeight; j++) {
+                let cell = 0;
+                newCellsY.push(cell);
+            }
+            newCells.push(newCellsY);
+        }
+
+        for (let i = 0; i < cellWidth; i++) {
+            for (let j = 0; j < cellHeight; j++) {
+                let cell = cells[i][j];
+                if (i > 0 && isMost(cells[i-1][j], cell)) {
+                    cell = cells[i-1][j];
+                }
+                if (i < cellWidth-1  && isMost(cells[i+1][j], cell)) {
+                    cell = cells[i+1][j];
+                }
+                if (j > 0 && isMost(cells[i][j-1], cell)) {
+                    cell = cells[i][j-1];
+                }
+                if (j < cellHeight-1 && isMost(cells[i][j+1], cell)) {
+                    cell = cells[i][j+1];
+                }
+                newCells[i][j] = cell;
+            }
+        }
+        cells = newCells;
+
+    //draw
+        context.fillStyle = '#ffc30f';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < cellWidth; i++) {
+            for (let j = 0; j < cellHeight; j++) {
+                let cell = cells[i][j];
+                context.fillStyle = colors[cell];
+                context.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
+            }
+        }
+        setTimeout(tick, 20);
+    }
+
+    setTimeout(tick, 20);
+</script>
+</html>
